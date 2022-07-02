@@ -1,4 +1,4 @@
-import { BigInt } from "@graphprotocol/graph-ts"
+import { Address, BigInt } from "@graphprotocol/graph-ts"
 import {
   GoldenHopper,
   Approval,
@@ -6,7 +6,7 @@ import {
   OwnerUpdated,
   Transfer
 } from "../generated/GoldenHopper/GoldenHopper"
-import { ExampleEntity } from "../generated/schema"
+import { Owner, Token } from "../generated/schema"
 
 export function handleApproval(event: Approval): void {
   // Entities can be loaded from the store using a string ID; this ID
@@ -65,4 +65,19 @@ export function handleApprovalForAll(event: ApprovalForAll): void {}
 
 export function handleOwnerUpdated(event: OwnerUpdated): void {}
 
-export function handleTransfer(event: Transfer): void {}
+export function handleTransfer(event: Transfer): void {
+  if(event.params.from.equals(Address.zero())){ // mint
+    let owner = Owner.load(event.params.to.toHex());
+    if(!owner){
+      owner = new Owner(event.params.to.toHex());
+    }
+    owner.address = event.params.to;
+    let token = new Token(event.params.id.toString());
+    token.owner = event.params.to.toHex();
+    token.ownerString = event.params.to.toHex();
+
+  }
+  else if(event.params.to.equals(Address.zero()) { // burn
+    
+  }
+}
