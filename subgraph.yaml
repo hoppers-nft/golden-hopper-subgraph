@@ -1,0 +1,32 @@
+specVersion: 0.0.1
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: GoldenHopper
+    network: avalanche
+    source:
+      address: "0x37B7B9c99BffD951E579bBb844694598721190Aa"
+      abi: GoldenHopper
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - Approval
+        - ApprovalForAll
+        - OwnerUpdated
+        - Transfer
+      abis:
+        - name: GoldenHopper
+          file: ./abis/GoldenHopper.json
+      eventHandlers:
+        - event: Approval(indexed address,indexed address,indexed uint256)
+          handler: handleApproval
+        - event: ApprovalForAll(indexed address,indexed address,bool)
+          handler: handleApprovalForAll
+        - event: OwnerUpdated(indexed address)
+          handler: handleOwnerUpdated
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/golden-hopper.ts
