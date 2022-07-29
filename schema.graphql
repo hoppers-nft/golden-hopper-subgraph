@@ -8,4 +8,5 @@ type Owner @entity {
   id: ID!
   tokens: [Token!] @derivedFrom(field: "owner")
   address : Bytes!
+  count: Int!
 }
