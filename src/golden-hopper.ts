@@ -15,6 +15,30 @@ export function handleApprovalForAll(event: ApprovalForAll): void {}
 export function handleOwnerUpdated(event: OwnerUpdated): void {}
 
 export function handleTransfer(event: Transfer): void {
+  let GoldenHopperVeFlySourceAddress = Address.fromHexString("0x9156289a580ef50956607a107c15399ea9656d73");
+  if(event.params.to.equals(GoldenHopperVeFlySourceAddress)){
+    let owner = Owner.load(event.params.from.toHex());
+    let token = Token.load(event.params.id.toString());
+    owner!.goldenHopperStakedForVeFly = true;
+    token!.goldenHopperStakedForVeFly = true;
+    token!.owner = event.params.from.toHex();
+    owner!.save();
+    token!.save();
+    log.error("here", []);
+    return
+  }
+  else if(event.params.from.equals(GoldenHopperVeFlySourceAddress)){
+    let owner = Owner.load(event.params.to.toHex());
+    let token = Token.load(event.params.id.toString());
+    owner!.goldenHopperStakedForVeFly = false;
+    token!.goldenHopperStakedForVeFly = false;
+    token!.owner = event.params.to.toHex();
+    owner!.save();
+    token!.save();
+    log.error("here", []);
+
+    return
+  }
   if(event.params.from.equals(Address.zero())){ // mint
     let owner = Owner.load(event.params.to.toHex());
     if(!owner){
@@ -33,7 +57,7 @@ export function handleTransfer(event: Transfer): void {
   else if(event.params.to.equals(Address.zero())) { // burn
     let owner = Owner.load(event.params.to.toHex());
     if(!owner){
-      log.error("Something wrong!", []);
+      log.error("Something wrong with burn!", []);
     }
     else {
       owner.count--;
@@ -51,7 +75,10 @@ export function handleTransfer(event: Transfer): void {
   else { // Normal transfer
     let previousOwner = Owner.load(event.params.from.toHex());
     if(!previousOwner){
-      log.error("Something wrong!", []);
+      log.error("Something wrong with transfer! Previous owner doesnt exist {} ", [event.params.from.toHex()]);
+      log.error("from : {}", [event.params.from.toHex()])
+      log.error("to : {}", [event.params.to.toHex()])
+
     }
     else {
       previousOwner.count--;
@@ -63,7 +90,7 @@ export function handleTransfer(event: Transfer): void {
       }
     }
 
-    let newOwner = Owner.load(event.params.from.toHex());
+    let newOwner = Owner.load(event.params.to.toHex());
     if(!newOwner){
       newOwner = new Owner(event.params.to.toHex());
       newOwner.count = 0;
@@ -75,7 +102,7 @@ export function handleTransfer(event: Transfer): void {
 
     let token = Token.load(event.params.id.toString());
     if(!token){
-      log.error("Something wrong!", []);
+      log.error("Something wrong with transfer, Token doesnt exist {} !", [event.params.id.toString()]);
     }
     else {
       token.owner = event.params.to.toHex();
