@@ -31,3 +31,30 @@ dataSources:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
       file: ./src/golden-hopper.ts
+  - kind: ethereum
+    name: Market
+    network: avalanche
+    source:
+      address: "0xdAcE6fB2B7dA8e09EB2D092e947A85a4874318F5"
+      startBlock: 
+        18626715 
+      abi: Market
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Bazaar
+      abis:
+        - name: Market
+          file: ./abis/Market.json
+      eventHandlers:
+        - event: AddListingEv(uint256,indexed address,indexed uint256,uint256)
+          handler: handleAddListing
+        - event: UpdateListingEv(uint256,uint256)
+          handler: handleUpdateListing
+        - event: CancelListingEv(uint256)
+          handler: handleCancelListing
+        - event: FulfillListingEv(uint256)
+          handler: handleFulfillListing
+      file: ./src/golden-hopper.ts
